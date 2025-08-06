@@ -14,6 +14,7 @@ services:
     user: "${UID}:${GID}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+        # This forces Docker to resolve openrouter.ai to the IPv4 address 104.18.39.11, bypassing DNS issues
       - "openrouter.ai:104.18.39.11"
     environment:
       - HOST=0.0.0.0
@@ -21,6 +22,8 @@ services:
       - MEILI_HOST=http://meilisearch:7700
       - RAG_PORT=${RAG_PORT:-8000}
       - RAG_API_URL=http://rag_api:${RAG_PORT:-8000}
+        # This tells Node.js (LibreChat's backend runs on Node) to prefer IPv4 DNS results first,
+        # fixing issues where IPv6 connections fail or timeout (this issue seems common with OpenRouter?)
       - NODE_OPTIONS=--dns-result-order=ipv4first
     volumes:
       - type: bind
@@ -29,10 +32,11 @@ services:
       - ./images:/app/client/public/images
       - ./uploads:/app/uploads
       - ./logs:/app/api/logs
+        # This mounts the custom librechat.yaml config file into the container
       - ./librechat.yaml:/app/librechat.yaml
     dns:
-        - 8.8.8.8
-        - 1.1.1.1
+        - 8.8.8.8 # Google DNS
+        - 1.1.1.1 # Cloudflare DNS
       
   mongodb:
     container_name: chat-mongodb

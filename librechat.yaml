@@ -190,17 +190,39 @@ endpoints:
   #   # (optional) Agent Capabilities available to all users. Omit the ones you wish to exclude. Defaults to list below.
   #   capabilities: ["execute_code", "file_search", "actions", "tools"]
   custom:
+      # the name used to identify this provider in LibreChat's interface.
     - name: "OpenRouter"
+
+      # env variable that holds the router key.
       apiKey: "${OPENROUTER_KEY}"
+
+      # the URL LibreChat which will use to send API requests to OpenRouter.
       baseURL: "https://openrouter.ai/api/v1"
+
+      # default: This is the default model used if no model is selected. Here, it's OpenRouter’s Gemma 3 27B IT (free) model.
+      # fetch (true): This tells LibreChat to automatically fetch the available models from OpenRouter's API (/models endpoint).
       models:
         default: ["google/gemma-3-27b-it:free"]
         fetch: true
+
+      # enables auto-generation of conversation titles using the model.
       titleConvo: true
+
+      # specifies which model should be used for generating conversation titles.
       titleModel: 'google/gemma-3-27b-it:free'
+
+      # tells LibreChat not to send the stop 'parameter' to this provider, since OpenRouter or the target model might not support it or handle it differently.
+      # some other parameters are: temperature, max-tokens, stream, messages, top_p etc.
       dropParams: ['stop']
+
+      # the label shown to users in the UI for this model
       modelDisplayLabel: "OpenRouter"
+
+      # maps the request format to match the expected structure of a Google AI Studio-style provider
       provider: 'google-ai-studio'
+      
+      # Authorization: Passes your API key using the Bearer scheme. ${OPENROUTER_KEY} is pulled from your environment.
+      # Content-Type: Indicates you're sending JSON data in the body of your request.
       headers:
         Authorization: "Bearer ${OPENROUTER_KEY}"
         Content-Type: "application/json"
